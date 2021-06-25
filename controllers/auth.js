@@ -1,35 +1,37 @@
 const express = require('express');
-
+const { validationResult } = require('express-validator');
+const users = require('../models/users');
 
 const loginUser = (req, res = express.response) => {
 
-    const { name, email, password } = req.body;
 
-    if (name.length < 5) {
-
-        return res.status(400).json(
-            {
-                ok: false,
-                msg: 'fiel name shoul be more than 5 characters'
-            }
-        )
-    }
-
-    return res.json({
+    return res.status(200).json({
         ok: true,
-        msg: 'POST login user',
-        name,
-        email,
-        password
+        msg: 'POST login user'
     })
 }
 
-const registerUser = (req, res = express.response) => {
+const registerUser = async(req, res = express.response) => {
+        //CREATE A NEW USE
+   try {
+       
+     // const { name, email, password } = req.body;
+     const newUser = new users(req.body);
+     await newUser.save();
 
-    res.json({
-        ok: true,
-        msg: 'POST register user'
-    })
+
+     res.status(201).json({
+         ok: true,
+         msg: 'POST registered user'
+     })
+
+   } catch (error) {
+       console.log(error)
+       res.status(500).json({
+           ok: false,
+           msg: 'Internal server error, contact with admin'
+       })
+   }
 }
 
 
