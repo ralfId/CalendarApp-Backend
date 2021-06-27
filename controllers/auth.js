@@ -33,7 +33,7 @@ const loginUser = (req, res = express.response) => {
             uid: user.id,
             name: user.name,
         })
-        
+
     } catch (error) {
         console.log(error)
         res.status(500).json({
@@ -69,7 +69,8 @@ const registerUser = async (req, res = express.response) => {
 
         res.status(201).json({
             ok: true,
-            msg: 'POST registered user'
+            uid: newUser.id,
+            name: newUser.name,
         })
 
     } catch (error) {
@@ -89,7 +90,6 @@ const revalidateToken = (req, res = express.response) => {
         msg: 'GET renew token'
     })
 }
-
 
 
 
