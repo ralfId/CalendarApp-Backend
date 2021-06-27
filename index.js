@@ -1,7 +1,8 @@
 //  importaciones de librerias en node
 const express = require('express');
-const { dbConnection } = require('./database/DBConfig');
 require('dotenv').config();
+const cors = require('cors')
+const { dbConnection } = require('./database/DBConfig');
 
 
 //  Crear el servidor de express
@@ -9,6 +10,9 @@ const app = express();
 
 //Initialize DataBase
 dbConnection();
+
+//CORS
+app.use(cors());
 
 // directorio publico
 app.use(express.static('public'));
