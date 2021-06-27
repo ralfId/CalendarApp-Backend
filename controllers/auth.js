@@ -2,8 +2,9 @@ const express = require('express');
 const { validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs')
 const users = require('../models/users');
+const { createJWT } = require('../helpers/jwt')
 
-const loginUser = (req, res = express.response) => {
+const loginUser = async (req, res = express.response) => {
 
 
     try {
@@ -19,7 +20,7 @@ const loginUser = (req, res = express.response) => {
             })
         }
 
-
+        //compare if passwor are similar
         let verifyPassword = bcrypt.compareSync(password, user.password)
         if (!verifyPassword) {
             return res.status(400).json({
@@ -28,10 +29,14 @@ const loginUser = (req, res = express.response) => {
             })
         }
 
+        //generate token
+        const token = await createJWT(user.id, user.name);
+
         return res.status(200).json({
             ok: true,
             uid: user.id,
             name: user.name,
+            token
         })
 
     } catch (error) {
@@ -66,11 +71,15 @@ const registerUser = async (req, res = express.response) => {
 
         await newUser.save();
 
+        //generate token
+        const token = await createJWT(newUser.id, newUser.name);
+
 
         res.status(201).json({
             ok: true,
             uid: newUser.id,
             name: newUser.name,
+            token
         })
 
     } catch (error) {
