@@ -23,11 +23,12 @@ app.use(express.json());
 
 
 // Rutas
+
 //  auth, create, login, renew
 app.use('/api/auth', require('./routes/auth'));
 
 //todo: CRUD events
-
+app.use('/api/events', require('./routes/events'));
 
 
 
