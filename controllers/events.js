@@ -4,36 +4,133 @@
  */
 
 const express = require('express');
+const Event = require('../models/events')
 
-const getEvents = (req, res = express.response) => {
-    return res.json({
-        ok: true,
-        msg: 'get all events'
-    })
+const getEvents = async (req, res = express.response) => {
+
+    try {
+        const events = await Event.find().populate('user', 'name');
+        return res.json({
+            ok: true,
+            events,
+        })
+
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({
+            ok: false,
+            msg: 'something is wrong, contact with admin'
+        })
+    }
 }
 
-const createEvent = (req, res = express.response) => {
+const createEvent = async (req, res = express.response) => {
 
-    console.log(req.body)
+    const event = new Event(req.body);
+    try {
+
+        event.user = req.uid;
+
+        const eventSave = await event.save();
+
+        return res.json({
+            ok: true,
+            evento: eventSave,
+        })
+
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({
+            of: false,
+            msg: "contact with admin"
+        })
+    }
+}
+
+const updateEvent = async(req, res = express.response) => {
     
-    return res.json({
-        ok: true,
-        msg: 'create an event'
-    })
+    const eventId = req.params.id;
+    const uid = req.uid;
+    
+    try {
+
+        const event = await Event.findById(eventId);
+
+        if (!event) {
+            res.status(404).json({
+                ok:true,
+                msg: 'do not exist an event with id'
+            })
+        }
+
+        if(event.user.toString() !== uid){
+            res.status(401).json({
+                ok:true,
+                msg: 'you do not have permission to edit this event'
+            })
+        }
+
+        const newEvent = {
+            ...req.body,
+            user: uid
+        }
+
+        const updatedEvent = await Event.findOneAndUpdate(eventId, newEvent, {new: true});
+
+        res.json({
+            ok:true,
+            event: updatedEvent
+        })
+
+    } catch (error) {
+
+        console.log(error)
+        return res.status(500).json({
+            ok: false,
+            msg: "contact with admin"
+        })
+    }
+
 }
 
-const updateEvent = (req, res = express.response) => {
-    return res.json({
-        ok: true,
-        msg: 'update an event'
-    })
-}
+const deleteEvent = async(req, res = express.response) => {
+    const eventId = req.params.id;
+    const uid = req.uid;
+    
+    try {
 
-const deleteEvent = (req, res = express.response) => {
-    return res.json({
-        ok: true,
-        msg: 'delete an event'
-    })
+        const event = await Event.findById(eventId);
+
+        if (!event) {
+            res.status(404).json({
+                ok:true,
+                msg: 'do not exist an event with id'
+            })
+        }
+
+        if(event.user.toString() !== uid){
+            res.status(401).json({
+                ok:true,
+                msg: 'you do not have permission to edit this event'
+            })
+        }
+
+
+        const updatedEvent = await Event.findByIdAndDelete();
+
+        res.json({
+            ok:true,
+            msg: 'the event is deleted'
+        })
+
+    } catch (error) {
+
+        console.log(error)
+        return res.status(500).json({
+            ok: false,
+            msg: "contact with admin"
+        })
+    }
 }
 
 module.exports = {
