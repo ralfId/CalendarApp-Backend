@@ -1,2 +1,0 @@
-user name ==>  mern_user
-password ==> kTfOsdsgtag1v6VG
