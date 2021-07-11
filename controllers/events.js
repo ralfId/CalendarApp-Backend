@@ -104,14 +104,14 @@ const deleteEvent = async (req, res = express.response) => {
 
         if (!event) {
             return res.status(404).json({
-                ok: true,
+                ok: false,
                 msg: 'do not exist an event with id'
             })
         }
 
         if (event.user.toString() !== uid) {
             return res.status(401).json({
-                ok: true,
+                ok: false,
                 msg: 'you do not have permission to edit this event'
             })
         }
