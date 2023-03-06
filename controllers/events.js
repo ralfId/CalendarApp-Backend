@@ -47,26 +47,25 @@ const createEvent = async (req, res = express.response) => {
     }
 }
 
-const updateEvent = async (req, res = express.response) => {
-
+const updateEvent = async(req, res = express.response) => {
+    
     const eventId = req.params.id;
     const uid = req.uid;
-
+    
     try {
 
         const event = await Event.findById(eventId);
-        console.log(event)
+
         if (!event) {
-            return res.status(404).json({
-                ok: true,
+            res.status(404).json({
+                ok:true,
                 msg: 'do not exist an event with id'
             })
         }
 
-
-        if (event.user._id.toString() !== uid) {
-            return res.status(401).json({
-                ok: false,
+        if(event.user.toString() !== uid){
+            res.status(401).json({
+                ok:true,
                 msg: 'you do not have permission to edit this event'
             })
         }
@@ -76,10 +75,10 @@ const updateEvent = async (req, res = express.response) => {
             user: uid
         }
 
-        const updatedEvent = await Event.findOneAndUpdate(eventId, newEvent, { new: true });
+        const updatedEvent = await Event.findOneAndUpdate(eventId, newEvent, {new: true});
 
-        return res.json({
-            ok: true,
+        res.json({
+            ok:true,
             event: updatedEvent
         })
 
@@ -94,24 +93,24 @@ const updateEvent = async (req, res = express.response) => {
 
 }
 
-const deleteEvent = async (req, res = express.response) => {
+const deleteEvent = async(req, res = express.response) => {
     const eventId = req.params.id;
     const uid = req.uid;
-
+    
     try {
 
         const event = await Event.findById(eventId);
 
         if (!event) {
-            return res.status(404).json({
-                ok: false,
+            res.status(404).json({
+                ok:true,
                 msg: 'do not exist an event with id'
             })
         }
 
-        if (event.user.toString() !== uid) {
-            return res.status(401).json({
-                ok: false,
+        if(event.user.toString() !== uid){
+            res.status(401).json({
+                ok:true,
                 msg: 'you do not have permission to edit this event'
             })
         }
@@ -120,7 +119,7 @@ const deleteEvent = async (req, res = express.response) => {
         const updatedEvent = await Event.findByIdAndDelete();
 
         res.json({
-            ok: true,
+            ok:true,
             msg: 'the event is deleted'
         })
 
